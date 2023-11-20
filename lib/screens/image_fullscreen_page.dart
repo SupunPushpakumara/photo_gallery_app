@@ -17,10 +17,12 @@ class ImageFullScreenPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // App Bar with delete button for admin users
       appBar: AppBar(
         actions: [
           if (userRole == constants.kAdminRole)
             IconButton(
+                // Handling delete action and popping the screen
                 onPressed: () {
                   handleDelete([image.id!.toInt()], () {
                     Navigator.pop(context);
@@ -39,6 +41,7 @@ class ImageFullScreenPage extends StatelessWidget {
       body: SizedBox(
         width: double.infinity,
         height: double.infinity,
+        // Displaying the image using its path
         child: Image.network(
           constants.kBaseUrl + image.imagePath.toString(),
           width: double.infinity,

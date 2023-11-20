@@ -13,6 +13,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  // Controllers for handling user inputs
   final TextEditingController _usernameInputController =
       TextEditingController();
   final TextEditingController _passwordInputController =
@@ -27,15 +28,18 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
   }
 
+  // Method to handle user sign-in
   void _signin(User user) async {
     setState(() {
       isLoading = true;
     });
+    // Calling the user handler to sign in
     await UserHandler.signin(user).then((token) {
       if (token != null && token != '') {
         setState(() {
           isLoading = false;
         });
+        // Navigating to the home screen on successful sign-in
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const HomeScreen()),
@@ -49,6 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         isLoading = false;
       });
+      // Showing an error dialog on sign-in failure
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -156,14 +161,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               controller: _passwordInputController,
                             ),
                           ),
-                          // Container(
-                          //   alignment: Alignment.centerRight,
-                          //   margin: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                          //   child: Text(
-                          //     "Forgot your password?",
-                          //     style: TextStyle(fontSize: 12, color: Color(0XFF2661FA)),
-                          //   ),
-                          // ),
                           SizedBox(height: size.height * 0.05),
                           Container(
                             alignment: Alignment.center,
@@ -204,6 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
+          // Loading indicator
           isLoading
               ? const Center(
                   child: CircularProgressIndicator(

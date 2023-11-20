@@ -13,17 +13,23 @@ AndroidOptions _getAndroidOptions() => const AndroidOptions(
     );
 final storage = FlutterSecureStorage();
 
+// Function to upload an image to the server
 class ImageHandler {
   static Future<dynamic> uploadImage(data) async {
     try {
       if (!await _checkInternet()) {
         throw ('No Internet');
       }
+
+      // Retrieving the user token from secure storage
       String? token = await storage.read(key: "token");
+
+      // Creating a POST request for image upload
       var postUri =
           Uri.parse(apiconst.kBaseUrl + apiconst.kImageUploadEndPoint);
       var request = http.MultipartRequest("POST", postUri);
 
+      // Adding the image file to the request
       if (data['image'] != null) {
         request.files.add(await http.MultipartFile.fromPath(
             'image', data['image'] != null ? data['image']!.path : '',
@@ -33,6 +39,7 @@ class ImageHandler {
         {HttpHeaders.authorizationHeader: 'Bearer $token'},
       );
 
+      // Sending the request and handling the response
       final response = request.send().then((response) async {
         if (response.statusCode == 201) {
           return 201;
@@ -53,6 +60,7 @@ class ImageHandler {
     }
   }
 
+  // Function to delete images from the server
   static Future<dynamic> deleteImages(imageIds) async {
     if (!await _checkInternet()) {
       throw ('No Internet');
@@ -88,6 +96,7 @@ class ImageHandler {
     }
   }
 
+  // Function to get a list of user images from the server
   static Future<List<UserImage>> getImagesList() async {
     if (!await _checkInternet()) {
       throw ('No Internet');
@@ -118,6 +127,7 @@ class ImageHandler {
     }
   }
 
+  // Function to decode the JSON response body into a list of UserImage objects
   static List<UserImage> _decodeTankers(String responseBody) {
     final body = json.decode(responseBody);
     final parsedBody = body.cast<Map<String, dynamic>>();
@@ -126,6 +136,7 @@ class ImageHandler {
         .toList();
   }
 
+  // Function to check internet connectivity
   static Future<bool> _checkInternet() async {
     try {
       final result = await InternetAddress.lookup('example.com');

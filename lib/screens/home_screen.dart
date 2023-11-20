@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -14,9 +13,11 @@ import './../const/const.dart' as constants;
 import '../models/user_image.dart';
 import '../widgets/dialog_ok.dart';
 
+// Android options for secure storage
 AndroidOptions _getAndroidOptions() => const AndroidOptions(
       encryptedSharedPreferences: true,
     );
+// Creating an instance of FlutterSecureStorage with Android options
 final storage = FlutterSecureStorage(aOptions: _getAndroidOptions());
 
 class HomeScreen extends StatefulWidget {
@@ -27,6 +28,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // State variables
   bool _isLoading = false;
   bool _multipleSelectMode = false;
   List<int> selectedList = [];
@@ -34,11 +36,13 @@ class _HomeScreenState extends State<HomeScreen> {
   String _userRole = '';
   DateTime? _currentBackPressTime;
 
+  // Method to handle image selection
   Future _handleImageSelect() async {
     final imageTemp = await CameraHelper.pickImage();
     _handleImageUpload({"image": imageTemp});
   }
 
+  // Method to handle image upload
   void _handleImageUpload(data) async {
     _showLoading();
     await ImageHandler.uploadImage(data).then((res) {
@@ -49,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  // Method to handle image deletion
   void _handleDelete(data) async {
     _showLoading();
     await ImageHandler.deleteImages(data).then((res) {
@@ -69,18 +74,21 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
+  // Method to show loading state
   void _showLoading() {
     setState(() {
       _isLoading = true;
     });
   }
 
+  // Method to hide loading state
   void _hideLoading() {
     setState(() {
       _isLoading = false;
     });
   }
 
+  // Method to fetch images
   void getImages() async {
     String? role = await storage.read(key: "userRole");
     setState(() {
@@ -97,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  // Method to show error dialog
   void _showErrorDialog(error) {
     _hideLoading();
     showDialog(
@@ -113,6 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Method to handle logout
   void _handleLogout() async {
     await storage.deleteAll().then((value) {
       Navigator.push(
@@ -122,6 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  // Method to handle back press
   Future<bool> _handleBackPress() async {
     if (_multipleSelectMode) {
       setState(() {
@@ -150,6 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return true;
   }
 
+  // Method to handle image deletion confirmation
   void _handleDeleteImage(imageIds, callback) async {
     String message =
         "Do you want to delete the image${selectedList.length == 1 ? '' : 's'}";
@@ -171,6 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Method to handle image selection or view in full-screen mode
   _handleSelect(UserImage image) {
     final int id = image.id!.toInt();
 
@@ -197,6 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // Method to handle long press for multiple selection (admin only)
   _handleLongPress(int id) {
     setState(() {
       if (_userRole == constants.kAdminRole) {
@@ -209,6 +223,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Floating Action Button for image selection (admin only)
       floatingActionButton: _userRole == constants.kAdminRole
           ? FloatingActionButton(
               backgroundColor: MainTheme.primaryColor,
@@ -218,6 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         actions: [
+          // Actions based on whether multiple selection mode is active
           if (_multipleSelectMode)
             IconButton(
               onPressed: () {
@@ -225,6 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               icon: const Icon(Icons.delete),
             ),
+          // Popup menu for logout
           PopupMenuButton<String>(
             onSelected: (String choice) {
               if (choice == constants.kMenuLogOut) {
@@ -257,6 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     runSpacing: 20,
                     children: [
                       for (var i = 0; i < imageList.length; i++)
+                        // single image card
                         InkWell(
                           child: Container(
                             width: 120,
@@ -287,6 +305,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+            // show loading
             _isLoading
                 ? const Center(
                     child: CircularProgressIndicator(
